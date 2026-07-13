@@ -48,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
-            Die();
+            //Die();
         }
     }
 

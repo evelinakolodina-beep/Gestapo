@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class PlayerAttackHitbox : MonoBehaviour
 {
     private HashSet<Collider> hitEnemies = new HashSet<Collider>();
@@ -14,15 +13,26 @@ public class PlayerAttackHitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Boss") && !hitEnemies.Contains(other))
-        {
-            hitEnemies.Add(other);
+        // Если мы уже ударили этот объект за текущий взмах - игнорируем
+        if (hitEnemies.Contains(other)) return;
 
-            // Берём здоровье врага и вызываем напрямую
+        // 1. Проверяем попадание по самому Боссу (использует твой старый код)
+        if (other.CompareTag("Boss"))
+        {
             if (other.TryGetComponent<EnemyHealth>(out var health))
             {
+                hitEnemies.Add(other);
                 health.TakeDamage(CurrentDamage);
+                return; // Прерываем дальнейшие проверки, так как уже попали
             }
+        }
+
+        // 2. Проверяем попадание по маленькому слову-снаряду
+        if (other.TryGetComponent<WordProjectile>(out var wordProjectile))
+        {
+            Debug.Log("в хит боксе прошло");
+            hitEnemies.Add(other);
+            wordProjectile.TakeDamage(CurrentDamage);
         }
     }
 }

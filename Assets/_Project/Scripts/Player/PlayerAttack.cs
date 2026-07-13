@@ -59,9 +59,12 @@ public class PlayerAttack : MonoBehaviour
             HashSet<EnemyHealth> damagedEnemies = new HashSet<EnemyHealth>();
             HashSet<DamageFlinch> flinchedObjects = new HashSet<DamageFlinch>();
 
+            // Флаг: сбили ли мы уже слово в этой атаке?
+            bool wordHitThisAttack = false;
+
             foreach (var col in hitColliders)
             {
-                // 1. УРОН
+                // 1. УРОН ПО ОБЫЧНЫМ ВРАГАМ / БОССУ (Их можно бить несколько за раз, если они в куче)
                 if (col.TryGetComponent<DamageReceiver>(out var receiver))
                 {
                     EnemyHealth health = receiver.GetRootHealth();
@@ -71,7 +74,15 @@ public class PlayerAttack : MonoBehaviour
                     }
                 }
 
-                // 2. ВИЗУАЛ (Ищем скрипт прямо на коллайдере, куда мы его теперь вешаем)
+                // 2. УРОН ПО МАЛЕНЬКИМ СЛОВАМ (СНАРЯДАМ)
+                // Проверяем флаг !wordHitThisAttack, чтобы ударить только одно
+                if (!wordHitThisAttack && col.TryGetComponent<WordProjectile>(out var wordProjectile))
+                {
+                    wordProjectile.TakeDamage(attackDamage);
+                    wordHitThisAttack = true; // Запоминаем, что слово уже сбили, остальные игнорируем
+                }
+
+                // 3. ВИЗУАЛ
                 if (col.TryGetComponent<DamageFlinch>(out var flinch))
                 {
                     if (flinchedObjects.Add(flinch))

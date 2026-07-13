@@ -123,6 +123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3290882516948952111}
   - component: {fileID: 637156959302681703}
+  - component: {fileID: 597165787136189544}
   m_Layer: 0
   m_Name: player_sprite
   m_TagString: Untagged
@@ -204,6 +205,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &597165787136189544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3941872163627136755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b424d4289cc49448e828a816c43a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageFlash
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.2
+  meshRenderer: {fileID: 0}
 --- !u!1 &6583711394903384394
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,6 +233,7 @@ GameObject:
   - component: {fileID: 8817542311762959657}
   - component: {fileID: 5854196880405271118}
   - component: {fileID: 7571713109834475871}
+  - component: {fileID: 4108911381630168830}
   m_Layer: 0
   m_Name: player
   m_TagString: Player
@@ -296,8 +313,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   hitbox: {fileID: 17047229143561257}
-  attackRange: 3
-  attackRadius: 4
+  attackRange: 5
+  attackRadius: 5
   attackCooldown: 0.5
   attackDamage: 10
   damageableLayer:
@@ -316,3 +333,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
+  flinchEffect: {fileID: 4108911381630168830}
+--- !u!114 &4108911381630168830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6583711394903384394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97048ea144820ff499d65b82e18582c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFlinch
+  spriteTransform: {fileID: 3290882516948952111}
+  flinchDistance: 1
+  flinchDuration: 0.15
+  useRandomDirection: 0
