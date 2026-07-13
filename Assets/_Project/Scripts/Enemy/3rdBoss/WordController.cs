@@ -86,6 +86,7 @@ public class WordController : MonoBehaviour
     public void StartMoving()
     {
         canMove = true;
+        AudioManager.PlayBossHit(3);
         Debug.Log("[WordController] Движение запущено");
     }
 

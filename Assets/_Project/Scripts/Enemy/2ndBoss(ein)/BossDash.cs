@@ -14,7 +14,7 @@ public class BossDash : MonoBehaviour, IBossAttack
     [SerializeField] private float aimThreshold = 1f;
 
     [Header("Параметры упреждения")]
-    [SerializeField] private float predictionTime = 0.5f; // На сколько секунд вперед предсказываем движение
+    [SerializeField] private float predictionTime = 0.5f;
 
     [Header("Параметры рывка")]
     [SerializeField] private float dashSpeed = 15f;
@@ -29,8 +29,7 @@ public class BossDash : MonoBehaviour, IBossAttack
     private Vector3 dashDirection;
     private Rigidbody rb;
 
-    // Переменные для предсказания движения игрока
-    private Vector3 _targetPosition; // Запомненная цель с упреждением
+    private Vector3 _targetPosition;
     private Vector3 _lastPlayerPos;
     private Vector3 _playerVelocity;
 
@@ -57,7 +56,6 @@ public class BossDash : MonoBehaviour, IBossAttack
 
     public void Execute()
     {
-        // Запоминаем позицию игрока и вычисляем упреждение
         CalculateTargetPosition();
         currentState = State.ROTATING;
     }
@@ -73,7 +71,6 @@ public class BossDash : MonoBehaviour, IBossAttack
     {
         if (_playerTransform == null || attackCollider == null) return;
 
-        // Обновляем скорость игрока для следующего использования
         float deltaTime = Time.deltaTime > 0f ? Time.deltaTime : 0.01f;
         _playerVelocity = (_playerTransform.position - _lastPlayerPos) / deltaTime;
         _lastPlayerPos = _playerTransform.position;
@@ -98,13 +95,8 @@ public class BossDash : MonoBehaviour, IBossAttack
     {
         if (_playerTransform == null) return;
 
-        // Берем текущую позицию игрока
         Vector3 playerPos = _playerTransform.position;
-
-        // Добавляем упреждение на основе скорости игрока
         Vector3 predictedPosition = playerPos + _playerVelocity * predictionTime;
-
-        // Сохраняем как цель
         _targetPosition = predictedPosition;
     }
 
@@ -116,7 +108,6 @@ public class BossDash : MonoBehaviour, IBossAttack
         Vector3 currentDir = childPos - parentPos;
         currentDir.y = 0f;
 
-        // Используем запомненную позицию с упреждением вместо текущей позиции игрока
         Vector3 targetDir = _targetPosition - parentPos;
         targetDir.y = 0f;
 
@@ -130,6 +121,7 @@ public class BossDash : MonoBehaviour, IBossAttack
         if (Mathf.Abs(angle) <= aimThreshold)
         {
             dashDirection = targetDir;
+            AudioManager.PlayBossHit(2);
             currentState = State.DASHING;
             return;
         }
@@ -168,7 +160,6 @@ public class BossDash : MonoBehaviour, IBossAttack
 
         if (pauseTimer <= 0f)
         {
-            // После паузы снова вычисляем новую цель с упреждением
             CalculateTargetPosition();
             currentState = State.ROTATING;
         }

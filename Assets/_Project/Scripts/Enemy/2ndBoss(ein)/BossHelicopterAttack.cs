@@ -105,6 +105,7 @@ public class BossHelicopterAttack : MonoBehaviour, IBossAttack
             if (toPlayer.sqrMagnitude > 0.0001f)
             {
                 dashDirection = toPlayer.normalized;
+                AudioManager.PlayBossHit(2);
                 currentState = State.DASHING;
             }
         }
@@ -150,7 +151,6 @@ public class BossHelicopterAttack : MonoBehaviour, IBossAttack
 
     public void StopRotation()
     {
-        // Метод есть, но не вызывается
     }
 
     private void ArrangeObjects()

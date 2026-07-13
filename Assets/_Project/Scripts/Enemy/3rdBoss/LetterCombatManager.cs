@@ -45,7 +45,7 @@ public class LetterCombatManager : MonoBehaviour, IBossAttack
             if (playerObj != null)
             {
                 playerTransform = playerObj.transform;
-                Debug.Log("[LetterCombatManager] Игрок найден по тегу 'P'");
+                Debug.Log("[LetterCombatManager] Игрок найден по тегу 'Player'");
             }
         }
     }
@@ -117,7 +117,6 @@ public class LetterCombatManager : MonoBehaviour, IBossAttack
 
         foreach (var group in targets)
         {
-            // Передаем сам Transform игрока, а не точку
             Coroutine c = StartCoroutine(AttackSequence(group, playerTransform));
             activeAttacks.Add(c);
 
@@ -136,23 +135,17 @@ public class LetterCombatManager : MonoBehaviour, IBossAttack
         OnCompleted?.Invoke();
     }
 
-    /// <summary>
-    /// Последовательность атаки одной группы. 
-    /// Теперь вычисляет предсказанную позицию непосредственно перед вылетом!
-    /// </summary>
     private IEnumerator AttackSequence(LetterGroup group, Transform target)
     {
         yield return StartCoroutine(group.Prepare());
 
-        // Вычисляем актуальную позицию игрока в момент окончания подготовки
         Vector3 predictedPosition = PredictPlayerPosition(target);
+
+        AudioManager.PlayBossHit(3);
 
         yield return StartCoroutine(group.Attack(predictedPosition));
     }
 
-    /// <summary>
-    /// Предсказывает позицию с учетом скорости конкретного игрока
-    /// </summary>
     private Vector3 PredictPlayerPosition(Transform target)
     {
         if (target == null) return Vector3.zero;
@@ -270,7 +263,6 @@ public class LetterCombatManager : MonoBehaviour, IBossAttack
             List<LetterGroup> targets = FindNearestCompatibleGroups(count, player.position);
             if (targets.Count > 0)
             {
-                // Передаем конкретного игрока, который вошел в триггер
                 StartCoroutine(ExecuteMultiAttack(targets, player));
             }
         }

@@ -120,6 +120,8 @@ public class WordAttack : MonoBehaviour, IBossAttack
     {
         attackingLetters.Add(letter);
 
+        AudioManager.PlayBossHit(1);
+
         Vector3 originalLocalPosition = letter.localPosition;
 
         Vector3 playerLocal = transform.InverseTransformPoint(player.position);

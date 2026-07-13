@@ -16,6 +16,9 @@ public class TopDownController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
+    [Header("Настройки звука")]
+    [SerializeField] private float footstepInterval = 0.35f; // Интервал между шагами (в секундах)
+
     private CharacterController controller;
     private float h;
     private float v;
@@ -27,7 +30,10 @@ public class TopDownController : MonoBehaviour
     private Vector3 lastMoveDirection;
 
     private string lastPlayedAnim = "";
-    private bool isFacingLeft = false; // Запоминаем направление взгляда для idle и side
+    private bool isFacingLeft = false;
+
+    // Таймер для звука шагов
+    private float footstepTimer = 0f;
 
     private void Start()
     {
@@ -69,8 +75,9 @@ public class TopDownController : MonoBehaviour
 
         // 4. Абсолютное движение по мировым осям X и Z
         Vector3 moveDirection = (Vector3.forward * v + Vector3.right * h).normalized;
+        bool isMoving = moveDirection != Vector3.zero; // Флаг движения для звука и анимации
 
-        if (moveDirection != Vector3.zero)
+        if (isMoving)
         {
             lastMoveDirection = moveDirection;
         }
@@ -81,7 +88,7 @@ public class TopDownController : MonoBehaviour
         // 5. Проверка нажатия рывка
         if (Input.GetKeyDown(dashKey) && dashCooldownTimer <= 0)
         {
-            Vector3 currentDashDir = moveDirection != Vector3.zero ? moveDirection : lastMoveDirection;
+            Vector3 currentDashDir = isMoving ? moveDirection : lastMoveDirection;
 
             if (currentDashDir != Vector3.zero)
             {
@@ -89,6 +96,10 @@ public class TopDownController : MonoBehaviour
                 dashTimer = dashDuration;
                 dashCooldownTimer = dashCooldown;
                 dashDirection = currentDashDir;
+
+                // ВОСПРОИЗВЕДЕНИЕ ЗВУКА РЫВКА
+                AudioManager.PlayDash();
+
                 return;
             }
         }
@@ -96,6 +107,23 @@ public class TopDownController : MonoBehaviour
         // 6. Применяем обычное движение
         Vector3 finalMove = moveDirection * moveSpeed;
         controller.Move(finalMove * Time.deltaTime);
+
+        //  ЛОГИКА ЗВУКА ШАГОВ
+        if (isMoving)
+        {
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0f)
+            {
+                AudioManager.PlayFootstep();
+                footstepTimer = footstepInterval; // Сбрасываем таймер на следующий шаг
+            }
+        }
+        else
+        {
+            // Если игрок остановился, сбрасываем таймер, 
+            // чтобы при следующем движении первый шаг проигрался сразу
+            footstepTimer = 0f;
+        }
     }
 
     private void UpdateAnimation(float h, float v, Vector3 moveDirection)
@@ -110,16 +138,14 @@ public class TopDownController : MonoBehaviour
             // Определяем доминирующую ось
             if (Mathf.Abs(v) > Mathf.Abs(h))
             {
-                // ПОМЕНЯЛИ МЕСТАМИ: v > 0 теперь "back", v < 0 теперь "forward"
                 targetAnim = v > 0 ? "back" : "forward";
             }
             else
             {
                 targetAnim = "side";
-                isFacingLeft = (h < 0); // Запоминаем, что смотрим влево
+                isFacingLeft = (h < 0);
             }
 
-            // Включаем анимацию только при смене состояния
             if (targetAnim != lastPlayedAnim)
             {
                 animator.Play(targetAnim);
@@ -128,7 +154,6 @@ public class TopDownController : MonoBehaviour
         }
         else
         {
-            // Игрок остановился — играем idle
             targetAnim = "idle";
 
             if (targetAnim != lastPlayedAnim)
@@ -138,7 +163,6 @@ public class TopDownController : MonoBehaviour
             }
         }
 
-        // Применяем отражение спрайта (сохраняется и во время idle)
         if (spriteRenderer != null)
         {
             spriteRenderer.flipX = isFacingLeft;

@@ -152,6 +152,8 @@ public class WordCircleAttack : MonoBehaviour, IBossAttack
 
         yield return new WaitForSeconds(delayBeforeCenterAttack);
 
+        AudioManager.PlayBossHit(2);
+
         StartMovementToLocalPosition(lettersToAttack, playerLocalPosition, attackSpeed);
 
         yield return new WaitUntil(() => AllLettersAtLocalPosition(lettersToAttack, playerLocalPosition));
