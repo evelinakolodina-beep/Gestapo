@@ -7,10 +7,14 @@ public class TopDownController : MonoBehaviour
     [SerializeField] private float moveSpeed = 6f;
 
     [Header("Настройки рывка")]
-    [SerializeField] private float dashSpeed = 15f;      // Скорость рывка
-    [SerializeField] private float dashDuration = 0.2f;  // Длительность рывка в секундах
-    [SerializeField] private float dashCooldown = 1f;    // Перезарядка рывка в секундах
-    [SerializeField] private KeyCode dashKey = KeyCode.LeftShift; // Клавиша рывка
+    [SerializeField] private float dashSpeed = 15f;
+    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private KeyCode dashKey = KeyCode.LeftShift;
+
+    [Header("Анимация (Спрайт и Аниматор на другом объекте)")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private CharacterController controller;
     private float h;
@@ -21,6 +25,9 @@ public class TopDownController : MonoBehaviour
     private float dashCooldownTimer = 0f;
     private Vector3 dashDirection;
     private Vector3 lastMoveDirection;
+
+    private string lastPlayedAnim = "";
+    private bool isFacingLeft = false; // Запоминаем направление взгляда для idle и side
 
     private void Start()
     {
@@ -52,7 +59,7 @@ public class TopDownController : MonoBehaviour
             else
             {
                 controller.Move(dashDirection * dashSpeed * Time.deltaTime);
-                return; // Прерываем выполнение, чтобы не сработало обычное движение
+                return;
             }
         }
 
@@ -63,16 +70,17 @@ public class TopDownController : MonoBehaviour
         // 4. Абсолютное движение по мировым осям X и Z
         Vector3 moveDirection = (Vector3.forward * v + Vector3.right * h).normalized;
 
-        // Запоминаем последнее направление движения (нужно для рывка на месте)
         if (moveDirection != Vector3.zero)
         {
             lastMoveDirection = moveDirection;
         }
 
+        // --- ЛОГИКА АНИМАЦИИ ---
+        UpdateAnimation(h, v, moveDirection);
+
         // 5. Проверка нажатия рывка
         if (Input.GetKeyDown(dashKey) && dashCooldownTimer <= 0)
         {
-            // Рывок в текущем направлении, либо в последнем, если ввод сброшен
             Vector3 currentDashDir = moveDirection != Vector3.zero ? moveDirection : lastMoveDirection;
 
             if (currentDashDir != Vector3.zero)
@@ -88,5 +96,52 @@ public class TopDownController : MonoBehaviour
         // 6. Применяем обычное движение
         Vector3 finalMove = moveDirection * moveSpeed;
         controller.Move(finalMove * Time.deltaTime);
+    }
+
+    private void UpdateAnimation(float h, float v, Vector3 moveDirection)
+    {
+        if (animator == null) return;
+
+        string targetAnim = "";
+        bool isMoving = moveDirection != Vector3.zero;
+
+        if (isMoving)
+        {
+            // Определяем доминирующую ось
+            if (Mathf.Abs(v) > Mathf.Abs(h))
+            {
+                // ПОМЕНЯЛИ МЕСТАМИ: v > 0 теперь "back", v < 0 теперь "forward"
+                targetAnim = v > 0 ? "back" : "forward";
+            }
+            else
+            {
+                targetAnim = "side";
+                isFacingLeft = (h < 0); // Запоминаем, что смотрим влево
+            }
+
+            // Включаем анимацию только при смене состояния
+            if (targetAnim != lastPlayedAnim)
+            {
+                animator.Play(targetAnim);
+                lastPlayedAnim = targetAnim;
+            }
+        }
+        else
+        {
+            // Игрок остановился — играем idle
+            targetAnim = "idle";
+
+            if (targetAnim != lastPlayedAnim)
+            {
+                animator.Play(targetAnim);
+                lastPlayedAnim = targetAnim;
+            }
+        }
+
+        // Применяем отражение спрайта (сохраняется и во время idle)
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = isFacingLeft;
+        }
     }
 }

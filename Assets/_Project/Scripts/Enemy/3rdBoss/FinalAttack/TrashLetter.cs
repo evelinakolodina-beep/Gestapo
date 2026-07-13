@@ -37,10 +37,6 @@ public class TrashLetter : MonoBehaviour
 
             // Уничтожаем букву при касании
             Destroy(gameObject);
-        // Проверяем, что вошли в триггер с тегом Border
-        if (other.CompareTag("Border"))
-        {
-           
-        }
+       
     }
 }

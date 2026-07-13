@@ -1229,9 +1229,9 @@ MonoBehaviour:
   - {fileID: 4171870011999935139}
   - {fileID: 2251760404528862950}
   wordObject: {fileID: 5614695017764452455}
-  radius: 5
+  radius: 7
   arrangeLerpSpeed: 5
-  rotationSpeed: 180
+  rotationSpeed: 300
   dashSpeed: 10
 --- !u!114 &5567943161745711868
 MonoBehaviour:

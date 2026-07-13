@@ -325,7 +325,7 @@ MonoBehaviour:
   - {fileID: 5761807572992795369}
   wordAnchor: {fileID: 0}
   wordContainer: {fileID: 5151355220967288728}
-  letterSpacing: 6
+  letterSpacing: 10
   formationSpeed: 10
   targetScaleMultiplier: 4
   scalingDuration: 1
