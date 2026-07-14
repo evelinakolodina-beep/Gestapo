@@ -1,10 +1,16 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // 1. Подключаем работу со сценами
+using System.Collections;         // 2. Подключаем для IEnumerator
 using System;
 
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Настройки здоровья")]
     [SerializeField] private float maxHealth = 100f;
+
+    [Header("Настройки перезапуска")]
+    [SerializeField, Tooltip("Задержка в секундах перед перезагрузкой сцены")]
+    private float restartDelay = 2f; // 3. Добавляем переменную задержки
 
     [Header("Эффекты")]
     [SerializeField, Tooltip("Перетащите сюда скрипт PlayerFlinch")]
@@ -42,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
-            //Die();
+            Die();
         }
     }
 
@@ -50,8 +56,17 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Игрок погиб!");
         OnDie?.Invoke();
-        Destroy(gameObject);
+        
+        // 4. Запускаем корутину перезагрузки вместо мгновенного Destroy
+        
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        // ПРИМЕЧАНИЕ: Destroy(gameObject) убран отсюда. 
+        // Если уничтожить объект сейчас, корутина не успеет выполниться.
+        // При перезагрузке сцены объект и так будет уничтожен.
     }
+
+    // 5. Новый метод корутины для ожидания и перезагрузки
+   
 
     public void Heal(float amount)
     {

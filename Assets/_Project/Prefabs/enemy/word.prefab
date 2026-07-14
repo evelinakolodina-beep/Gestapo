@@ -1086,7 +1086,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
-  bossHealthBars: []
+  bossHealthBars:
+  - {fileID: 2889044850495022810}
   isBoss: 1
 --- !u!114 &6876108493140685098
 MonoBehaviour:

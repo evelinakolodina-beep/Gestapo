@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb2fa1d49ebcdd4bba36a53941c6b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  contactDamage: 20
+  contactDamage: 10
 --- !u!54 &4947213200860127554
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -540,7 +540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb2fa1d49ebcdd4bba36a53941c6b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  contactDamage: 20
+  contactDamage: 10
 --- !u!54 &6568675770398527494
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1041,7 +1041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb2fa1d49ebcdd4bba36a53941c6b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  contactDamage: 20
+  contactDamage: 10
 --- !u!54 &19305170867401317
 Rigidbody:
   m_ObjectHideFlags: 0

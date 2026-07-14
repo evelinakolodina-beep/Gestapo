@@ -6,6 +6,7 @@ public class MainMenuController : MonoBehaviour
     [Header("Ссылки на Канвасы")]
     [SerializeField] private GameObject mainMenuCanvas;
     [SerializeField] private GameObject disclaimerCanvas;
+    [SerializeField] private GameObject prefaceCanvas; // <-- Новый канвас с предисловием
 
     [Header("Настройки загрузки")]
     // ВПИШИ СЮДА ТОЧНОЕ ИМЯ твоей игровой сцены из Build Settings (в кавычках)
@@ -15,17 +16,26 @@ public class MainMenuController : MonoBehaviour
     {
         if (mainMenuCanvas != null) mainMenuCanvas.SetActive(true);
         if (disclaimerCanvas != null) disclaimerCanvas.SetActive(false);
+        if (prefaceCanvas != null) prefaceCanvas.SetActive(false); // Изначально скрыт
     }
 
+    // 1. Кнопка "Начать игру" в главном меню
     public void OnStartGameClicked()
     {
         if (mainMenuCanvas != null) mainMenuCanvas.SetActive(false);
         if (disclaimerCanvas != null) disclaimerCanvas.SetActive(true);
     }
 
+    // 2. Кнопка принятия дисклеймера (например, "Принять" или "Понятно")
     public void OnDisclaimerAccepted()
     {
-        // Загружаем сцену по имени (это надёжнее, чем по индексу 0)
+        if (disclaimerCanvas != null) disclaimerCanvas.SetActive(false);
+        if (prefaceCanvas != null) prefaceCanvas.SetActive(true); // Показываем предисловие
+    }
+
+    // 3. Кнопка старта игры из канваса предисловия (например, "Играть" или "Далее")
+    public void OnPrefaceAccepted()
+    {
         SceneManager.LoadScene(gameSceneName);
     }
 
