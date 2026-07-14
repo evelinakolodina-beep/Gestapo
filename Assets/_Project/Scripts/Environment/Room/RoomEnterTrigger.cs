@@ -7,6 +7,7 @@ public class RoomEnterTrigger : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         EventManager.TriggerBossRoomEntered();
         EventManager.TriggerRoomEntered();
+        Debug.Log("триггер входа");
         Destroy(this);
     }
 }

@@ -13,6 +13,7 @@ public static class EventManager
 
     public static event Action OnBossRoomEntered;
     public static event Action OnBossRoomExited;
+    public static event Action OnGameEnded;
     public static void TriggerBorderHit()
     {
         OnBorderHit?.Invoke();
@@ -41,4 +42,9 @@ public static class EventManager
     public static void TriggerBossDied() => OnBossDied?.Invoke();
 
     public static void TriggerRoomCleared() => OnRoomCleared?.Invoke();
+
+    public static void TriggerGameEnded()
+    {
+        OnGameEnded?.Invoke();
+    }
 }

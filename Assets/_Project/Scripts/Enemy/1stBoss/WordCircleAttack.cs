@@ -152,7 +152,7 @@ public class WordCircleAttack : MonoBehaviour, IBossAttack
 
         yield return new WaitForSeconds(delayBeforeCenterAttack);
 
-        AudioManager.PlayBossHit(2);
+        AudioManager.PlayBossHit(1);
 
         StartMovementToLocalPosition(lettersToAttack, playerLocalPosition, attackSpeed);
 
