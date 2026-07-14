@@ -15,6 +15,9 @@ public class PlayerAttack : MonoBehaviour
     [Header("Слои")]
     [SerializeField] private LayerMask damageableLayer;
 
+    [Header("Анимация")] // <-- ДОБАВЛЕНО
+    [SerializeField] private Animator animator; // <-- ДОБАВЛЕНО
+
     private Camera mainCam;
     private bool isAttacking = false;
 
@@ -22,6 +25,12 @@ public class PlayerAttack : MonoBehaviour
     {
         mainCam = Camera.main;
         if (hitbox != null) hitbox.SetActive(false);
+
+        // <-- ДОБАВЛЕНО: если ты забыла перетащить Animator в инспекторе, скрипт найдёт его сам
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 
     private void Update()
@@ -41,6 +50,16 @@ public class PlayerAttack : MonoBehaviour
         {
             isAttacking = true;
             AudioManager.PlayPlayerAttack();
+
+            // <-- ДОБАВЛЕНО: запуск анимации
+            if (animator != null)
+            {
+                // Проигрываем состояние с точным именем "attack"
+                animator.Play("attack");
+
+                // 💡 Совет: если в окне Animator ты настроила переход через параметр Trigger, 
+                // то вместо строки выше лучше использовать: animator.SetTrigger("attack");
+            }
 
             Vector3 clickPoint = ray.GetPoint(distance);
             Vector3 direction = (clickPoint - transform.position).normalized;

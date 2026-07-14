@@ -45,6 +45,7 @@ public static class EventManager
 
     public static void TriggerGameEnded()
     {
+        Debug.Log("конец");
         OnGameEnded?.Invoke();
     }
 }

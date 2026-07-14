@@ -9,9 +9,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pauseCanvas;
 
     [Header("Настройки Концовки")]
+    [SerializeField] private GameObject endGameCanvas; // <-- Новый канвас окончания игры
     [SerializeField] private VideoPlayer endCinematicVideo;
     [SerializeField] private string mainMenuSceneName = "MainMenu";
-    [SerializeField] private float endGameDelay = 3f; // Задержка в секундах перед показом ролика
+    [SerializeField] private float endGameDelay = 3f; // Задержка в секундах перед показом концовки
 
     private bool isPaused = false;
 
@@ -25,12 +26,22 @@ public class GameManager : MonoBehaviour
         {
             endCinematicVideo.loopPointReached += OnEndCinematicFinished;
         }
+
+        // Убеждаемся, что канвас концовки выключен при старте
+        if (endGameCanvas != null)
+        {
+            endGameCanvas.SetActive(false);
+        }
     }
 
-    // Обязательно отписываемся при уничтожении объекта, чтобы избежать утечек памяти
     private void OnDestroy()
     {
         EventManager.OnGameEnded -= HandleGameEnded;
+
+        if (endCinematicVideo != null)
+        {
+            endCinematicVideo.loopPointReached -= OnEndCinematicFinished;
+        }
     }
 
     private void Update()
@@ -72,24 +83,32 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Завершение игры и Ролик
-    // Этот метод вызывается, когда срабатывает EventManager.OnGameEnded
     private void HandleGameEnded()
     {
+        Debug.Log("Конец игры. Запуск последовательности завершения.");
         StartCoroutine(EndGameSequence());
     }
 
-    // Корутина для задержки и последовательного запуска
     private IEnumerator EndGameSequence()
     {
         // 1. Снимаем паузу, если она была, чтобы время шло
         Time.timeScale = 1f;
         isPaused = false;
-        if (pauseCanvas != null) pauseCanvas.SetActive(false);
+        if (pauseCanvas != null)
+        {
+            pauseCanvas.SetActive(false);
+        }
 
         // 2. Ждем указанное количество секунд
         yield return new WaitForSeconds(endGameDelay);
 
-        // 3. Запускаем ролик
+        // 3. Активируем канвас окончания игры
+        if (endGameCanvas != null)
+        {
+            endGameCanvas.SetActive(true);
+        }
+
+        // 4. Запускаем ролик (если он есть)
         if (endCinematicVideo != null)
         {
             endCinematicVideo.Play();
@@ -97,7 +116,13 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogWarning("VideoPlayer для концовки не назначен в GameManager!");
-            LoadMainMenu();
+            // Если видео нет, но есть канвас, мы НЕ загружаем меню автоматически, 
+            // чтобы игрок мог прочитать текст на канвасе и нажать кнопку сам.
+            // Если нет ни видео, ни канваса, загружаем меню.
+            if (endGameCanvas == null)
+            {
+                LoadMainMenu();
+            }
         }
     }
 
@@ -106,7 +131,8 @@ public class GameManager : MonoBehaviour
         LoadMainMenu();
     }
 
-    private void LoadMainMenu()
+    // Этот метод теперь можно повесить на кнопку "В главное меню" на вашем endGameCanvas
+    public void LoadMainMenu()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuSceneName);
