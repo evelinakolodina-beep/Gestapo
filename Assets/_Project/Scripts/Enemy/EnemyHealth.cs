@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic; // Добавлено для работы с List
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
@@ -8,7 +8,6 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private float maxHealth = 100f;
 
     [Header("Boss Health Bars")]
-    // Изменено на список, чтобы можно было назначить несколько шкал
     [SerializeField] private List<BossHealthBar> bossHealthBars = new List<BossHealthBar>();
     [SerializeField] private bool isBoss = true;
 
@@ -16,6 +15,7 @@ public class EnemyHealth : MonoBehaviour
 
     public event Action<float> OnDamaged;
     public event Action OnHalfHealthReached;
+    public event Action OnDied; // <-- ДОБАВЛЕНО: Событие смерти
 
     private bool _halfHealthTriggered = false;
 
@@ -25,13 +25,11 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // Автоматический поиск шкал, если список пуст
         if (isBoss && (bossHealthBars == null || bossHealthBars.Count == 0))
         {
             TryFindBossHealthBars();
         }
 
-        // Показываем шкалу при спавне для всех назначенных/найденных объектов
         if (isBoss && bossHealthBars != null)
         {
             foreach (var bar in bossHealthBars)
@@ -48,32 +46,23 @@ public class EnemyHealth : MonoBehaviour
     {
         try
         {
-            // Ищем среди всех объектов, включая неактивные
             BossHealthBar[] allBars = FindObjectsOfType<BossHealthBar>(includeInactive: true);
-
             if (allBars.Length > 0)
             {
                 bossHealthBars.AddRange(allBars);
-                // Debug.Log($"[Enemy] Найдено {bossHealthBars.Count} объектов BossHealthBar");
-            }
-            else
-            {
-                // Debug.LogError("[Enemy] Не найден объект с компонентом BossHealthBar в сцене!");
             }
         }
         catch (UnityException e)
         {
-            // Debug.LogError($"[Enemy] Ошибка при поиске BossHealthBar: {e.Message}");
+            Debug.LogError($"[Enemy] Ошибка при поиске BossHealthBar: {e.Message}");
         }
     }
 
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
-
         OnDamaged?.Invoke(damage);
 
-        // Проверяем порог здоровья
         if (!_halfHealthTriggered && currentHealth <= maxHealth * 0.5f)
         {
             _halfHealthTriggered = true;
@@ -88,7 +77,10 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
-        // Скрываем ВСЕ шкалы с анимацией
+        // 1. Сначала вызываем событие смерти, чтобы другие скрипты могли отреагировать
+        OnDied?.Invoke(); // <-- ДОБАВЛЕНО
+
+        // 2. Скрываем ВСЕ шкалы с анимацией
         if (isBoss && bossHealthBars != null)
         {
             foreach (var bar in bossHealthBars)

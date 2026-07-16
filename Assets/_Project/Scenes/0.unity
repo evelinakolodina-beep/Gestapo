@@ -596,7 +596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CorridorManager
   startCorridor: {fileID: 1038478676}
-  bossRoom1: {fileID: 162194220}
+  bossRoom1: {fileID: 843806863}
   bossRoom2: {fileID: 527178378}
   bossRoom3: {fileID: 162194220}
   healRoom1: {fileID: 1331757095}
@@ -629,12 +629,12 @@ VideoPlayer:
   m_VideoClip: {fileID: 32900000, guid: da510776ce39a1544a7b7b8e6c71c76c, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
-  m_TargetCamera: {fileID: 0}
+  m_TargetCamera: {fileID: 330585545}
   m_TargetTexture: {fileID: 0}
   m_TimeReference: 0
   m_TargetMaterialRenderer: {fileID: 0}
   m_TargetMaterialProperty: <noninit>
-  m_RenderMode: 2
+  m_RenderMode: 1
   m_AspectRatio: 2
   m_DataSource: 0
   m_TimeUpdateMode: 2
@@ -1453,6 +1453,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7256601292600768828, guid: a6e4a5911a5158c4490088ba916db250, type: 3}
   m_PrefabInstance: {fileID: 7332173633728177275}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &843806863 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6869739721345609030, guid: a6e4a5911a5158c4490088ba916db250, type: 3}
+  m_PrefabInstance: {fileID: 7332173633728177275}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843806860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c30c245062b8949429f785951110841d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Room
 --- !u!1 &878461212
 GameObject:
   m_ObjectHideFlags: 0
@@ -2469,7 +2480,7 @@ MonoBehaviour:
   playerTakeDamage: {fileID: 0}
   boss1Hit: {fileID: 8300000, guid: 871e0259cac0a4e5eaef103415e48dfe, type: 3}
   boss2Hit: {fileID: 8300000, guid: b47a6a5cbded240bba711f8a385ffc75, type: 3}
-  boss3Hit: {fileID: 0}
+  boss3Hit: {fileID: 8300000, guid: 2403c7e2f42fd9c40bff6fb8053d9e5a, type: 3}
   corridorAppear: {fileID: 0}
   introRevealSound: {fileID: 0}
   buttonClick: {fileID: 0}

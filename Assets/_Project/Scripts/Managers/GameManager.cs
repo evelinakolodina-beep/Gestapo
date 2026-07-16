@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
@@ -102,33 +103,23 @@ public class GameManager : MonoBehaviour
         // 2. Ждем указанное количество секунд
         yield return new WaitForSeconds(endGameDelay);
 
+        // 4. Запускаем ролик (если он есть)
+        if (endCinematicVideo != null)
+        {
+            endCinematicVideo.Play();
+            yield return new WaitForSeconds((float) endCinematicVideo.length);
+        }
+
         // 3. Активируем канвас окончания игры
         if (endGameCanvas != null)
         {
             endGameCanvas.SetActive(true);
         }
-
-        // 4. Запускаем ролик (если он есть)
-        if (endCinematicVideo != null)
-        {
-            endCinematicVideo.Play();
-        }
-        else
-        {
-            Debug.LogWarning("VideoPlayer для концовки не назначен в GameManager!");
-            // Если видео нет, но есть канвас, мы НЕ загружаем меню автоматически, 
-            // чтобы игрок мог прочитать текст на канвасе и нажать кнопку сам.
-            // Если нет ни видео, ни канваса, загружаем меню.
-            if (endGameCanvas == null)
-            {
-                LoadMainMenu();
-            }
-        }
     }
 
     private void OnEndCinematicFinished(VideoPlayer vp)
     {
-        LoadMainMenu();
+        //LoadMainMenu();
     }
 
     // Этот метод теперь можно повесить на кнопку "В главное меню" на вашем endGameCanvas

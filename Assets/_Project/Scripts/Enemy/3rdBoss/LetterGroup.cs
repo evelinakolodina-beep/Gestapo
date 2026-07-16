@@ -25,7 +25,7 @@ public class LetterGroup : MonoBehaviour
     public void Initialize(List<Transform> letters, float attackDistance,
                           float attackDuration, float returnDelay, float returnDuration, bool isRow)
     {
-        this.letters = letters;
+        this.letters = letters ?? new List<Transform>(); // Защита от null-списка
         this.attackDistance = attackDistance;
         this.attackDuration = attackDuration;
         this.returnDelay = returnDelay;
@@ -34,25 +34,34 @@ public class LetterGroup : MonoBehaviour
 
         homePosition = transform.position;
 
-        foreach (var letter in letters)
+        foreach (var letter in this.letters)
         {
-            localOffsets[letter] = letter.position - transform.position;
-            homeRotations[letter] = letter.rotation;
+            if (letter != null)
+            {
+                localOffsets[letter] = letter.position - transform.position;
+                homeRotations[letter] = letter.rotation;
+            }
         }
     }
 
     public IEnumerator Prepare()
     {
+        if (this == null || letters == null) yield break;
+
         float time = 0f;
 
         while (time < prepareDuration)
         {
+            if (this == null || letters == null) yield break;
+
             time += Time.deltaTime;
             float progress = time / prepareDuration;
             float currentAmplitude = shakeAmplitude * progress;
 
             foreach (var letter in letters)
             {
+                if (letter == null) continue; // Пропускаем уничтоженные буквы
+
                 Vector3 shakeOffset = new Vector3(
                     Mathf.PerlinNoise(Time.time * shakeFrequency, letter.GetInstanceID()) - 0.5f,
                     0f,
@@ -67,8 +76,11 @@ public class LetterGroup : MonoBehaviour
             yield return null;
         }
 
+        if (this == null || letters == null) yield break;
+
         foreach (var letter in letters)
         {
+            if (letter == null) continue;
             letter.position = transform.position + localOffsets[letter];
             letter.rotation = homeRotations[letter];
         }
@@ -76,6 +88,8 @@ public class LetterGroup : MonoBehaviour
 
     public IEnumerator Attack(Vector3 targetPosition)
     {
+        if (this == null || letters == null) yield break;
+
         Vector3 direction = (targetPosition - homePosition).normalized;
         Vector3 attackOffset = direction * attackDistance;
 
@@ -87,6 +101,8 @@ public class LetterGroup : MonoBehaviour
 
         while (time < attackDuration)
         {
+            if (this == null || letters == null) yield break;
+
             time += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, time / attackDuration);
 
@@ -94,6 +110,7 @@ public class LetterGroup : MonoBehaviour
 
             foreach (var letter in letters)
             {
+                if (letter == null) continue;
                 letter.position = transform.position + localOffsets[letter];
                 letter.rotation = homeRotations[letter];
             }
@@ -107,9 +124,12 @@ public class LetterGroup : MonoBehaviour
             yield return null;
         }
 
+        if (this == null || letters == null) yield break;
+
         transform.position = attackPos;
         foreach (var letter in letters)
         {
+            if (letter == null) continue;
             letter.position = transform.position + localOffsets[letter];
             letter.rotation = homeRotations[letter];
         }
@@ -121,9 +141,14 @@ public class LetterGroup : MonoBehaviour
 
         yield return new WaitForSeconds(returnDelay);
 
+        // После любой паузы (yield return) обязательно проверяем, не уничтожили ли объект
+        if (this == null || letters == null) yield break;
+
         time = 0f;
         while (time < returnDuration)
         {
+            if (this == null || letters == null) yield break;
+
             time += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, time / returnDuration);
 
@@ -131,15 +156,19 @@ public class LetterGroup : MonoBehaviour
 
             foreach (var letter in letters)
             {
+                if (letter == null) continue;
                 letter.position = transform.position + localOffsets[letter];
                 letter.rotation = homeRotations[letter];
             }
             yield return null;
         }
 
+        if (this == null || letters == null) yield break;
+
         transform.position = startPos;
         foreach (var letter in letters)
         {
+            if (letter == null) continue;
             letter.position = transform.position + localOffsets[letter];
             letter.rotation = homeRotations[letter];
         }
@@ -147,12 +176,16 @@ public class LetterGroup : MonoBehaviour
 
     private bool CheckPlayerCollision()
     {
+        if (this == null) return false;
+
         Collider groupCollider = GetComponent<Collider>();
         if (groupCollider == null) return false;
 
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (var player in players)
         {
+            if (player == null) continue;
+
             Collider playerCollider = player.GetComponent<Collider>();
             if (playerCollider != null && groupCollider.bounds.Intersects(playerCollider.bounds))
             {
